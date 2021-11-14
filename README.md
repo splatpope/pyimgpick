@@ -8,7 +8,8 @@ pyimgpick is a TKinter app for manually sorting images, intended for the creatio
 
 ### Requirements
 
-`pillow` (with `python3-pil.imagetk`)
+* python 3
+* `pillow` (with `python3-pil.imagetk`)
 
 ### Usage
 
