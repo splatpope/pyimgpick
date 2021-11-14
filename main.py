@@ -126,6 +126,9 @@ class imgpicker():
         if not src_dir:
             start_img = ImageTk.PhotoImage(Image.open(os.path.join(os.getcwd(), 'letsgo.jpg')))
             self.reset_canvas(start_img)
+            self.cur_dst_folder = None
+            self.cur_src_folder = None
+            self.update_labels()
             return
         self.loader = None
         self.clean_records()
