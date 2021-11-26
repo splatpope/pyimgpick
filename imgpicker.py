@@ -247,6 +247,8 @@ class ImgPicker(tk.Tk):
             self.update_labels()
             return
         self.clean_records()
+        if not src_dir:
+            src_dir = self.cur_src_folder
         self.loader = ImgFolder(src_dir)
         if not self.loader.paths:
             messagebox.showerror(message="Source folder is empty or does not contain suitable images !")
