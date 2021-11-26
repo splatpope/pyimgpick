@@ -104,9 +104,9 @@ class TopFrame(tk.Frame):
 
         self.frame_m = tk.Frame(self)
         self.lbl_src = tk.Label(self.frame_m)
-        self.lbl_src.pack(pady=(0, 10))
+        self.lbl_src.grid(pady=(0, 10), sticky="w")
         self.lbl_dst = tk.Label(self.frame_m)
-        self.lbl_dst.pack(pady=(10, 0))
+        self.lbl_dst.grid(pady=(10, 0), sticky="w")
 
         self.frame_r = tk.Frame(self)
         self.btn_commit = tk.Button(self.frame_r,
@@ -186,8 +186,10 @@ class ImgPicker(tk.Tk):
         self.bind("<Right>", lambda event: self.pickers.right.emit())
         self.bind("<Up>", lambda event: self.pickers.up.emit())
         self.bind("<Down>", lambda event: self.pickers.down.emit())
+        self.bind("<BackSpace>", lambda event: self.back())
 
         self.protocol("WM_DELETE_WINDOW", self.exit) ## debug
+        self.clean_records()
         self.reset()
 
     def exit(self, dump=True):
@@ -200,6 +202,7 @@ class ImgPicker(tk.Tk):
         self.destroy()
 
     def clean_records(self):
+        self.history = []
         self.imgrecord = {
             self.pickers.left.assignment: [],
             self.pickers.right.assignment: [],
@@ -254,6 +257,8 @@ class ImgPicker(tk.Tk):
 
     def getimage(self, dir="next"):
         if not self.loader:
+            if dir == "prev":
+                return
             raise ValueError("Cannot get the next image without an image loader !")
         ## Get next image
         try:
@@ -262,7 +267,10 @@ class ImgPicker(tk.Tk):
             if dir == "prev":
                 img = self.loader.prev()
         except StopIteration:
-            img = load_image("done.jpg")
+            if self.loader.completed():
+                img = load_image("done.jpg")
+            else:
+                return
         if img:
             self.cur_img = load_tk_image(img)
             self.display.set_content(self.cur_img)
@@ -284,11 +292,12 @@ class ImgPicker(tk.Tk):
             messagebox.showinfo(message="No more images to pick, please commit your sorting !")
             return
         self.imgrecord[assignment].append(self.loader.curpath())
-        self.last_assignment = assignment
+        self.history.append(assignment)
         self.getimage()
 
     def back(self):
         if not self.loader:
             return
         self.getimage("prev")
-        self.imgrecord[self.last_assignment].pop()
+        if self.history:
+            self.imgrecord[self.history.pop()].pop()

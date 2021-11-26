@@ -30,6 +30,7 @@ class ImgFolder():
     def prev(self):
         self.head -= 1
         if self.head < 0:
+            self.head = 0
             raise StopIteration
         return self.curimg()
     
